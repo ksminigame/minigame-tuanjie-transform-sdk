@@ -1,0 +1,19 @@
+{
+    "name": "kuaishou.runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:39e0a8d734341a748a11d45f50641371"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "MiniHost.LitJson.dll",
+        "Unity.MiniHos.FontABTool.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

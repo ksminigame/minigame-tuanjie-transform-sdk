@@ -1,0 +1,42 @@
+{
+  "deviceOrientation": "$ORIENTATION",
+  "appId": "$APP_ID",
+  "companyName": "$COMPANYNAME",
+  "productName": "$PRODUCTNAME",
+  "productVersion": "$PRODUCTVERSION",
+  "buildDescription": "$BUILDDESCRIPTION",
+  "isWasmSplitSupport": $ISWASMSPLITSUPPORT,
+  "convertScriptVersion": "$CONVERTSCRIPTVERSION",
+  "convertToolVersion": "$CONVERTTOOLVERSION",
+  "openDataContext": "open-data",
+  "iOSHighPerformance": true,
+  "iOSHighPerformance+": $ENABLE_IOSPERFORMANCEPLUS,
+  "subpackages": [
+    {
+      "name": "wasmcode",
+      "root": "wasmcode/"
+    },
+    {
+      "name": "data-package",
+      "root": "data-package/"
+    }
+  ],
+  "parallelPreloadSubpackages": [
+    {
+      "name": "wasmcode"
+    },
+    {
+      "name": "data-package"
+    }
+  ],
+  "plugins": {
+    "UnityPlugin": {
+      "contexts": [
+        {
+          "type": "isolatedContext"
+        }
+      ]
+    }
+  },
+  "workers": "workers"
+}

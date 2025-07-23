@@ -1,0 +1,29 @@
+{
+    "name": "kuaishou.editor",
+    "rootNamespace": "",
+    "references": [
+        "Unity.InstantGame.Editor",
+        "Unity.InternalAPIEditorBridge.009"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "unity.minihost.zxing.dll",
+        "MiniHost.LitJson.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.instantgame",
+            "expression": "0.3.1",
+            "define": "UNITY_INSTANTGAME"
+        }
+    ],
+    "noEngineReferences": false
+}

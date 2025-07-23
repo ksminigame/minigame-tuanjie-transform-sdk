@@ -1,0 +1,19 @@
+{
+  "name": "com.kuaishou.minigame",
+  "displayName": "Kwai MiniGame",
+  "description":  "快手小游戏，开发者可以构建快手游戏包，上传到快手小游戏平台进行发布，该包包含了快手小游戏的运行时和相关的API支持。",
+  "author": { 
+    "name": "" 
+  },
+  "version": "1.0.0",
+  "unity": "2019.4",
+  "category": "minigame",
+  "keywords": [
+    "Tuanjie",
+    "MiniGame",
+    "Unity"
+  ],
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  }
+}

@@ -1,2 +1,2 @@
-# minigame-tuanjie-transform-sdk
-minigame-tuanjie-transform-sdk
+# 团结小游戏宿主插件
+团结小游戏宿主插件使得开发者可以上传自己构建好的游戏到宿主后台服务器，并通过Connect App扫码体验。

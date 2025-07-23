@@ -1,0 +1,10 @@
+{
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "ignore": [
+      "webgl.wasm.framework.unityweb.js",
+      "cachedPlugin/UnityPlugin/*.js"
+    ],
+    "comments": false
+  }

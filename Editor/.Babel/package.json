@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@babel/cli": "^7.24.6",
+    "@babel/core": "^7.24.6",
+    "@babel/preset-env": "^7.24.6",
+    "babel-preset-minify": "^0.5.2"
+  },
+  "scripts": {
+    "babel": "babel  --config-file ./.babelrc D:/unity_projects/tjhost/Build/minigame -d D:/unity_projects/tjhost/Build/minigame"
+  }
+}
