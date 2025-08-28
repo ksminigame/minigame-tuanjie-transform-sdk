@@ -38,6 +38,10 @@ const managerConfig = {
     loadDataPackageFromSubpackage: $LOAD_DATA_FROM_SUBPACKAGE,
     // 资源包放小游戏分包加载时，是否br压缩
     compressDataPackage: $COMPRESS_DATA_PACKAGE,
+    // wasm资源放小游戏分包加载时，是否br压缩
+    compressWasm: $COMPRESS_WASM,
+    // 是否是游戏试玩包
+    demoPackage: $DEMO_PACKAGE,
     // 需要在网络空闲时预加载的资源，支持如下形式的路径
     preloadDataList: [
         // 'DATA_CDN/StreamingAssets/WebGL/textures_8d265a9dfd6cb7669cdb8b726f0afb1e',

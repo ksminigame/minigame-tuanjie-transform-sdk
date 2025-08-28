@@ -87,11 +87,11 @@ namespace KSWASM.editor
                 GUILayout.EndHorizontal();
 
                 this.formIntPopup("assetLoadType", "首包资源加载方式", new[] { "CDN", "小游戏包内" }, new[] { 0, 1 });
-                this.formCheckbox("compressDataPackage", "压缩首包资源(?)", "将首包资源Brotli压缩, 降低资源大小. 注意: 首次启动耗时可能会增加200ms, 仅推荐使用小游戏分包加载时节省包体大小使用");
+                this.formCheckbox("demoPackage", "游戏试玩包");
+                this.formCheckbox("compressDataPackage", "压缩首包资源(?)", "将首包资源Brotli压缩, 降低资源大小. 注意: 首次启动耗时可能会增加200ms, 仅推荐使用小游戏分包加载时节省包体大小使用", disable:this.getDataCheckbox("demoPackage"));
+                this.formCheckbox("compressWasm", "压缩WASM(?)", "将WASM资源Brotli压缩, 降低资源大小.", disable:this.getDataCheckbox("demoPackage"));
                 this.formIntPopup("orientation", "游戏方向", new[] { "纵向", "横向" }, new[] { 0, 1});
                 this.formInput("cdn", "游戏资源CDN");
-                // this.formInput("buildVersion", "*版本");
-                // this.formInput("buildDescription", "描述");
                 this.formInput("memorySize", "预分配堆大小", "单位MB，预分配内存值，超休闲游戏256/中轻度496/重度游戏768，需预估游戏最大UnityHeap值以防止内存自动扩容带来的峰值尖刺。");
                 this.formInput("bundleExcludeExtensions", "不自动缓存文件类型(?)", "(使用;分割)当请求url包含资源'cdn+StreamingAssets'时会自动缓存，但StreamingAssets目录下不是所有文件都需缓存，此选项配置不需要自动缓存的文件拓展名。默认值json");
                 this.formInput("bundleHashLength", "Bundle名称Hash长度(?)", "自定义Bundle文件名中hash部分长度，默认值32，用于缓存控制。");
@@ -182,6 +182,8 @@ namespace KSWASM.editor
             this.setData("cdn", ProjectConf.FindPropertyRelative("CDN").stringValue);
             this.setData("assetLoadType", ProjectConf.FindPropertyRelative("assetLoadType").intValue);
             this.setData("compressDataPackage", ProjectConf.FindPropertyRelative("compressDataPackage").boolValue);
+            this.setData("compressWasm", ProjectConf.FindPropertyRelative("compressWasm").boolValue);
+            this.setData("demoPackage", ProjectConf.FindPropertyRelative("demoPackage").boolValue);
             this.setData("videoUrl", ProjectConf.FindPropertyRelative("VideoUrl").stringValue);
             this.setData("orientation", (int)ProjectConf.FindPropertyRelative("Orientation").enumValueIndex);
             // this.setData("dst", ProjectConf.FindPropertyRelative("DST").stringValue);
@@ -225,9 +227,6 @@ namespace KSWASM.editor
             this.setData("enableProfileStats", CompileOptions.FindPropertyRelative("enableProfileStats").boolValue);
             this.setData("enableRenderAnalysis", CompileOptions.FindPropertyRelative("enableRenderAnalysis").boolValue);
             this.setData("brotliMT", CompileOptions.FindPropertyRelative("brotliMT").boolValue);
-            
-            this.setData("buildVersion", ProjectConf.FindPropertyRelative("buildVersion").stringValue);
-            this.setData("buildDescription", ProjectConf.FindPropertyRelative("buildDescription").stringValue);
         }
 
         protected void saveData(SerializedObject serializedObject, SerializedProperty miniGameProperty)
@@ -240,6 +239,8 @@ namespace KSWASM.editor
             ProjectConf.FindPropertyRelative("CDN").stringValue = this.getDataInput("cdn");
             ProjectConf.FindPropertyRelative("assetLoadType").intValue = this.getDataPop("assetLoadType");
             ProjectConf.FindPropertyRelative("compressDataPackage").boolValue = this.getDataCheckbox("compressDataPackage");
+            ProjectConf.FindPropertyRelative("compressWasm").boolValue = this.getDataCheckbox("compressWasm");
+            ProjectConf.FindPropertyRelative("demoPackage").boolValue = this.getDataCheckbox("demoPackage");
             ProjectConf.FindPropertyRelative("VideoUrl").stringValue = this.getDataInput("videoUrl");
             ProjectConf.FindPropertyRelative("Orientation").enumValueIndex = this.getDataPop("orientation");
             ProjectConf.FindPropertyRelative("DST").stringValue = serializedObject.FindProperty("m_BuildPath").stringValue;
@@ -284,9 +285,6 @@ namespace KSWASM.editor
             CompileOptions.FindPropertyRelative("enableProfileStats").boolValue = this.getDataCheckbox("enableProfileStats");
             CompileOptions.FindPropertyRelative("enableRenderAnalysis").boolValue = this.getDataCheckbox("enableRenderAnalysis");
             CompileOptions.FindPropertyRelative("brotliMT").boolValue = this.getDataCheckbox("brotliMT");
-
-            ProjectConf.FindPropertyRelative("buildVersion").stringValue = this.getDataInput("buildVersion");
-            ProjectConf.FindPropertyRelative("buildDescription").stringValue = this.getDataInput("buildDescription");
             serializedObject.ApplyModifiedProperties();
         }
 
