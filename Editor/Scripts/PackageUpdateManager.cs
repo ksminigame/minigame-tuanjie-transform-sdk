@@ -1,10 +1,7 @@
-using System;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using Newtonsoft.Json.Linq;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 
@@ -12,7 +9,6 @@ namespace KSWASM.editor
 {
     public class PackageUpdateManager
     {
-        private const string packageName = "com.kuaishou.minigame";
         private const string gitRepoUrl = "https://github.com/ksminigame/minigame-tuanjie-transform-sdk";
         private const string packageJsonUrl = "https://raw.githubusercontent.com/ksminigame/minigame-tuanjie-transform-sdk/refs/heads/main/package.json";
 

@@ -105,6 +105,8 @@ namespace KSWASM.editor
             this.setData("cdn", config.ProjectConf.CDN);
             this.setData("assetLoadType", config.ProjectConf.assetLoadType);
             this.setData("compressDataPackage", config.ProjectConf.compressDataPackage);
+            this.setData("compressWasm", config.ProjectConf.compressWasm);
+            this.setData("demoPackage", config.ProjectConf.demoPackage);
             this.setData("videoUrl", config.ProjectConf.VideoUrl);
             this.setData("orientation", (int)config.ProjectConf.Orientation);
             this.setData("dst", config.ProjectConf.DST);
@@ -143,9 +145,6 @@ namespace KSWASM.editor
             this.setData("enableProfileStats", config.CompileOptions.enableProfileStats);
             this.setData("enableRenderAnalysis", config.CompileOptions.enableRenderAnalysis);
             this.setData("brotliMT", config.CompileOptions.brotliMT);
-            
-            this.setData("buildVersion", config.ProjectConf.buildVersion);
-            this.setData("buildDescription", config.ProjectConf.buildDescription);
         }
 
         public void saveData()
@@ -155,6 +154,8 @@ namespace KSWASM.editor
             config.ProjectConf.CDN = this.getDataInput("cdn");
             config.ProjectConf.assetLoadType = this.getDataPop("assetLoadType");
             config.ProjectConf.compressDataPackage = this.getDataCheckbox("compressDataPackage");
+            config.ProjectConf.compressWasm = this.getDataCheckbox("compressWasm");
+            config.ProjectConf.demoPackage = this.getDataCheckbox("demoPackage");
             config.ProjectConf.VideoUrl = this.getDataInput("videoUrl");
             config.ProjectConf.Orientation = (KSScreenOritation)this.getDataPop("orientation");
             config.ProjectConf.DST = this.getDataInput("dst");
@@ -192,9 +193,6 @@ namespace KSWASM.editor
             config.CompileOptions.enableProfileStats = this.getDataCheckbox("enableProfileStats");
             config.CompileOptions.enableRenderAnalysis = this.getDataCheckbox("enableRenderAnalysis");
             config.CompileOptions.brotliMT = this.getDataCheckbox("brotliMT");
-
-            config.ProjectConf.buildVersion = this.getDataInput("buildVersion");
-            config.ProjectConf.buildDescription = this.getDataInput("buildDescription");
         }
 
         public string getDataInput(string target)
@@ -453,15 +451,15 @@ namespace KSWASM.editor
                 GUILayout.EndHorizontal();
 
                 settingsHelper.formIntPopup("assetLoadType", "首包资源加载方式", new[] { "CDN", "小游戏包内" }, new[] { 0, 1 });
-                settingsHelper.formCheckbox("compressDataPackage", "压缩首包资源(?)", "将首包资源Brotli压缩, 降低资源大小. 注意: 首次启动耗时可能会增加200ms, 仅推荐使用小游戏分包加载时节省包体大小使用");
+                settingsHelper.formCheckbox("demoPackage", "游戏试玩包");
+                settingsHelper.formCheckbox("compressDataPackage", "压缩首包资源(?)", "将首包资源Brotli压缩, 降低资源大小. 注意: 首次启动耗时可能会增加200ms, 仅推荐使用小游戏分包加载时节省包体大小使用", disable:settingsHelper.getDataCheckbox("demoPackage"));
+                settingsHelper.formCheckbox("compressWasm", "压缩WASM(?)", "将WASM资源Brotli压缩, 降低资源大小.", disable:settingsHelper.getDataCheckbox("demoPackage"));
                 settingsHelper.formIntPopup("orientation", "游戏方向", new[] { "纵向", "横向" }, new[] { 0, 1});
                 settingsHelper.formInput("cdn", "游戏资源CDN");
                 settingsHelper.formInput("memorySize", "预分配堆大小", "单位MB，预分配内存值，超休闲游戏256/中轻度496/重度游戏768，需预估游戏最大UnityHeap值以防止内存自动扩容带来的峰值尖刺。");
                 settingsHelper.formInput("bundleExcludeExtensions", "不自动缓存文件类型(?)", "(使用;分割)当请求url包含资源'cdn+StreamingAssets'时会自动缓存，但StreamingAssets目录下不是所有文件都需缓存，此选项配置不需要自动缓存的文件拓展名。默认值json");
                 settingsHelper.formInput("bundleHashLength", "Bundle名称Hash长度(?)", "自定义Bundle文件名中hash部分长度，默认值32，用于缓存控制。");
                 settingsHelper.formInput("preloadFiles", "预下载Bundle列表(?)", "使用;间隔，支持模糊匹配");
-                // settingsHelper.formInput("buildVersion", "*版本");
-                // settingsHelper.formInput("buildDescription", "描述");
                 EditorGUILayout.EndVertical();
             }
             

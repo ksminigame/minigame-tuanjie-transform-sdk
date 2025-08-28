@@ -1,0 +1,205 @@
+default:
+  tags:
+    - docker
+    - shared
+    - singapore
+
+stages:
+  - validate_format
+  - push_to_packman
+
+variables:
+  DEPLOY_ENVIRONMENT:
+    value: "staging"
+    options:
+      - "production"
+      - "staging"
+    description: "The deployment target. Set to 'staging' by default."
+  STAGING_ABV:
+    value: "false"
+    options:
+      - "true"
+      - "false"
+    description: "Run abv on staging. Set to 'false' by default."
+
+validate_package_format:
+  stage: validate_format
+  image: unity-cn-registry.cn-shanghai.cr.aliyuncs.com/tuanjie/package-testrunner:v4
+  script:
+    - |
+        find . -name "*.meta" -exec awk '/^guid:/ {
+          if (length($2) != 32 || $2 !~ /^[a-zA-Z0-9]+$/) {
+            print FILENAME ": Invalid GUID -> " $2;
+            exit 1
+          }
+        }' {} +
+    - |
+        if [ ! -f package.json ]; then
+          echo "package.json not found"
+          exit 1
+        fi
+        unityRelease=$(jq -r '.unityRelease // empty' package.json)
+        if [[ -z "$unityRelease" ]]; then
+          echo "unityRelease entry not found in package.json, continuing checking..."
+        else
+          # Check format of unityRelease
+          if [[ "$unityRelease" =~ ^[0-9]+t[0-9]+$ ]]; then
+            echo "unityRelease entry is valid: $unityRelease"
+          else
+            echo "unityRelease entry is invalid: $unityRelease"
+            exit 1
+          fi
+        fi
+    - |
+        if [ -f "ProjectData~/ProjectSettings/ProjectVersion.txt" ]; then
+          echo "Error: ProjectVersion.txt found!"
+          exit 1
+        fi
+    - |
+        # Check if any .unity file exists
+        if find . -type f -name "*.unity" | grep -q .; then
+          echo "Error: .unity file found!"
+          exit 1
+        fi
+    - |
+        if grep -r -l "^%TAG !u! tag:unity3d.com" --include="*.asset" .; then
+          echo "Error: Found a line starting with '%TAG !u! tag:unity3d.com' in a .asset file!"
+          exit 1
+        fi
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DEPLOY_ENVIRONMENT == "staging"'
+
+push_to_packman_staging:
+  stage: push_to_packman
+  image: unity-cn-registry.cn-shanghai.cr.aliyuncs.com/tuanjie/package-testrunner:v4
+  script:
+    # extract package name
+    - package_name=$(cat package.json | jq '.name' | tr -d \" | cat)
+    - package_version=$(cat package.json | jq '.version' | tr -d \" | cat)
+    # Send the curl request with the package_name variable
+    - results=$(curl -o /dev/null -w "%{http_code}" --location "https://api-staging.tuanjie.cn/v1/packages/name/$package_name?version=$package_version");
+    - |
+        if [ "$results" -eq 404 ]; then
+          echo "Package version $package_version not found"
+        else
+          package_id=$(curl --location "https://api-staging.tuanjie.cn/v1/packages/name/${package_name}?version=${package_version}" \
+          --header "X-Unity-Version: 2022.3.27t1" \
+          --header "Authorization: Basic $UPM_GENESIS_AUTH" | jq -r '.id');
+          echo "Package version $package_version found, delete package $package_name-$package_version-$package_id";
+          response=$(curl -o /dev/null -w "%{http_code}" --location --request DELETE "https://api-staging.tuanjie.cn/v1/packages/${package_id}" \
+          --header "X-Unity-Version: 2022.3.27t1" \
+          --header "Authorization: Basic $UPM_GENESIS_AUTH");
+          if [ "$response" -gt 204 ]; then
+            echo "Package ${package_name}-${package_version} delete get $response";
+            exit 1;
+          fi
+          curl --location --request POST "https://packages-staging.tuanjie.cn/-/api-internal/packages/$package_name/refresh";
+        fi
+    - |
+        NPM_AUTH=$(curl --location --request PUT 'https://packages-staging.tuanjie.cn/-/user/${NPM_USERNAME}' \
+        --header 'Content-Type: application/json' \
+        --data '{"name": "'"${NPM_USERNAME}"'", "password": "'"${NPM_STG_PASSWORD}"'"}' | jq '.token')
+    - echo -e "//packages-staging.tuanjie.cn/:_authToken=${NPM_AUTH}" > ~/.npmrc;
+    - node --version;
+    - |    
+      CURRENT_NODE_VERSION=$(node -v 2>/dev/null)
+    - |
+      if [ "$CURRENT_NODE_VERSION" == "v16.20.2" ]; then
+        echo "The current Node.js version is 16.20.2.";
+      else
+        echo "The current Node.js version is not 16.20.2, installing it..."
+        exit 1
+      fi
+    - npm whoami --registry https://packages-staging.tuanjie.cn;
+    - npm pack;
+    #- mv ${package_name}-${package_version}.tgz /root/;
+    #- cd ~/ && git clone https://jenkins:$CI_JOB_TOKEN@gitlab-fw.internal.unity.cn/dev/packages/gen-package-signature.git;
+    #- cp -f $PRIVATE_SIGN_KEY gen-package-signature/src/cert/private_key;
+    #- cd gen-package-signature;
+    #- npm i;
+    #- npm run gen-signature -- --file=/root/${package_name}-${package_version}.tgz;
+    - npm publish ${package_name}-${package_version}.tgz --registry https://packages-staging.tuanjie.cn;
+    - |
+        if [[ $STAGING_ABV == "true" ]]; then
+          if [ -n "$yamato_branch_name" ]; then
+              echo "job will run on branch $yamato_branch_name";
+          else
+              yamato_branch_name=$package_name;
+          fi
+          if [ -n "$tj_commits_ref" ]; then
+              echo "job will run on commits based on $tj_commits_ref";
+          else
+              tj_commits_ref="trunk";
+          fi
+          tj_project_id=34;
+          escaped_yamato_branch_name=$(echo $yamato_branch_name | sed 's/\//%2F/g');
+          check_branch_url="https://gitlab-fw.internal.unity.cn/api/v4/projects/${tj_project_id}/repository/branches/${escaped_yamato_branch_name}";
+          branch_exists=$(curl --silent --header "PRIVATE-TOKEN: ${GITLAB_API_KEY}" "$check_branch_url" | jq -r '.name');
+
+          # Create the branch if it doesn't exist
+          if [ "$branch_exists" != "$yamato_branch_name" ]; then
+              echo "creating new branch ${yamato_branch_name} for test";
+              create_branch_url="https://gitlab-fw.internal.unity.cn/api/v4/projects/${tj_project_id}/repository/branches";
+              create_branch_resp=$(curl --request POST --header "Content-Type: application/json" --header "PRIVATE-TOKEN: $GITLAB_API_KEY" --data '{"branch":"'"${yamato_branch_name}"'","ref":"trunk"}' "$create_branch_url" | jq -r '.name');
+              if [ "$create_branch_resp" != "$yamato_branch_name" ]; then
+                echo "create branch failed";
+                exit 1;
+              fi
+          fi
+
+          commit=$(curl --location "https://gitlab-fw.internal.unity.cn/api/v4/projects/${tj_project_id}/repository/commits/${tj_commits_ref}" \
+          --header "PRIVATE-TOKEN: ${GITLAB_API_KEY}" | jq -r '.id');
+          echo "commit is $commit";
+
+          job_id=$(curl --location --request POST 'https://yamato.unity.cn/api/jobs' \
+          --header "Content-Type: application/json" \
+          --header "Authorization: ApiKey ${YAMATO_API_KEY}" \
+          --data '{"source": {"branchName": "'"${yamato_branch_name}"'","revision": "'"${commit}"'"},"rebuild": "everything","links": {"project": "/projects/10","jobDefinition": "/projects/10/revisions/'"${commit}"'/job-definitions/.yamato%2Fabv-and-z-configs.yml%23abuildverification" },"environmentVariables":[{"key":"TPM_REGISTRY","value":"https://packages-staging.tuanjie.cn"}]}' | jq -r '.id');
+          echo "job link is https://yamato.unity.cn/job/$job_id";
+        fi
+  rules:
+    # - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^tuanjie-master-\d+\.x\.x$/'
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DEPLOY_ENVIRONMENT == "staging"'
+  needs: ["validate_package_format"]
+
+push_to_packman_production:
+  stage: push_to_packman
+  image: unity-cn-registry.cn-shanghai.cr.aliyuncs.com/tuanjie/package-testrunner:v4
+  script:
+    - package_name=$(cat package.json | jq '.name' | tr -d \" | cat)
+    - package_version=$(cat package.json | jq '.version' | tr -d \" | cat)
+    - results=$(curl -o /dev/null -w "%{http_code}" --location "https://api-staging.tuanjie.cn/v1/packages/name/$package_name?version=$package_version");
+    - |
+      if [ "$results" -eq 404 ]; then
+          echo "Package $package_name-$package_version not found"
+          exit 1;
+      fi
+    - |
+      curl -L -H "X-Unity-Version: 2022.3.27t1" -O "https://packages-staging.tuanjie.cn/$package_name/-/$package_name-$package_version.tgz";
+    - |
+      NPM_AUTH=$(curl --location --request PUT 'https://packages.tuanjie.cn/-/user/${NPM_USERNAME}' \
+        --header 'Content-Type: application/json' \
+        --data '{"name": "'"${NPM_USERNAME}"'", "password": "'"${NPM_PRD_PASSWORD}"'"}' | jq '.token')
+    - echo -e "//packages.tuanjie.cn/:_authToken=${NPM_AUTH}" > ~/.npmrc;
+    - node --version;
+    - |    
+      CURRENT_NODE_VERSION=$(node -v 2>/dev/null)
+    - |
+      if [ "$CURRENT_NODE_VERSION" == "v16.20.2" ]; then
+        echo "The current Node.js version is 16.20.2."
+      else
+        echo "The current Node.js version is not 16.20.2, installing it..."
+        exit 1
+      fi
+    - npm whoami --registry https://packages.tuanjie.cn;
+    - npm publish ${package_name}-${package_version}.tgz --registry https://packages.tuanjie.cn;
+    - |
+       NPM_AUTH=$(curl --location --request PUT 'https://packages-v2.unity.cn/-/user/${NPM_USERNAME}' \
+        --header 'Content-Type: application/json' \
+        --data '{"name": "'"${NPM_USERNAME}"'", "password": "'"${RA_NPM_PRD_PASSWORD}"'"}' | jq '.token')
+    - echo -e "//packages-v2.unity.cn/:_authToken=${NPM_AUTH}" > ~/.npmrc;
+    - npm publish ${package_name}-${package_version}.tgz --registry https://packages-v2.unity.cn
+  rules:
+    # - if: '($CI_COMMIT_TAG =~ /^tuanjie-release-\d+\.\d+\.\d+$/ || $CI_COMMIT_TAG =~ /^tuanjie-\d+\.\d+\.\d+$/ || $CI_COMMIT_TAG =~ /^release-\d+\.\d+\.\d+$/) && ($CI_COMMIT_BRANCH =~ /^tuanjie-master-\d+\.x\.x$/)'
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DEPLOY_ENVIRONMENT == "production"'

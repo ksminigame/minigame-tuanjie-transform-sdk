@@ -499,6 +499,7 @@ export class AudioChannelInstance {
             }
         }
         if (!url) {
+            return;
             this.source = WEBAudio.audioContext.createBufferSource();
             WEBAudio.bufferSourceNodeLength += 1;
             const { source } = this;

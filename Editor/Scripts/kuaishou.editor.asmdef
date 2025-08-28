@@ -13,8 +13,7 @@
     "overrideReferences": false,
     "precompiledReferences": [
         "unity.minihost.zxing.dll",
-        "MiniHost.LitJson.dll",
-        "Newtonsoft.Json.dll"
+        "MiniHost.LitJson.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

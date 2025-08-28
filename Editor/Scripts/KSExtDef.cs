@@ -53,6 +53,11 @@ namespace KSWASM.editor
 #else
             KSExtEnvDef.SETDEF("UNITY_2021_3_OR_NEWER", false);
 #endif
+#if UNITY_2021_2_5
+            KSExtEnvDef.SETDEF("UNITY_2021_2_5", true);
+#else
+            KSExtEnvDef.SETDEF("UNITY_2021_2_5", false);
+#endif
 #if UNITY_EDITOR_OSX
             KSExtEnvDef.SETDEF("UNITY_EDITOR_OSX", true);
 #else

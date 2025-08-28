@@ -1,2 +1,4 @@
-# 团结小游戏宿主插件
-团结小游戏宿主插件使得开发者可以上传自己构建好的游戏到宿主后台服务器，并通过Connect App扫码体验。
+# 快手小游戏宿主插件
+快手小游戏，开发者可以构建快手游戏包，上传到快手小游戏平台进行发布，该包包含了快手小游戏的运行时和相关的API支持。
+
+官方文档：https://docs.qingque.cn/d/home/eZQAIID-S92Rd6hhqyS-jkXnK?identityId=2G5RW70GDUS
