@@ -222,8 +222,11 @@ export default {
             if(config.position && config.length) {
                 res = fs.readFileSync(config.filePath, config.encoding, config.position, config.length);
             }
-            else{
+            else if(config.encoding){
                 res = fs.readFileSync(config.filePath, config.encoding);
+            }
+            else{
+                res = fs.readFileSync(config.filePath);
             }
             if (!config.encoding && typeof res !== 'string') {
                 cacheArrayBuffer(filePath, res);

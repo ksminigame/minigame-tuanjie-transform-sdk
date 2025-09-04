@@ -41,7 +41,7 @@ export default {
             moduleHelper.send('OnVideoCallback', JSON.stringify({
                 callbackId: id,
                 key: key,
-                errMsg: e.errMsg,
+                errMsg: e && e.errMsg != undefined ? e.errMsg: "",
                 position: e && e.position,
                 buffered: e && e.buffered,
                 duration: e && e.duration,
