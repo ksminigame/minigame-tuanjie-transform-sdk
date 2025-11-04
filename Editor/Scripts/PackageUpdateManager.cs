@@ -23,6 +23,8 @@ namespace KSWASM.editor
         private static bool isInstalling = false;
         private static string currentStatus = "准备安装中...";
 
+        private static bool isDialogScheduled = false;
+
         [System.Serializable]
         public class PackageInfo
         {
@@ -90,12 +92,23 @@ namespace KSWASM.editor
             latestVersion = packageInfo.version;
             if (CompareVersions(currentVersion, latestVersion) < 0)
             {
-                OpenDownloadUrl();
+                if (!isDialogScheduled)
+                {
+                    isDialogScheduled = true;
+                    EditorApplication.delayCall += () =>
+                    {
+                        OpenDownloadUrl();
+                        isDialogScheduled = false;
+                    };
+                }
                 return true;
             }
             else if (isWindow)
             {
-                EditorUtility.DisplayDialog("快手小游戏插件检查更新", $"当前版本: {currentVersion}, 线上最新版本: {latestVersion}，已是最新版本。", "确定");
+                EditorApplication.delayCall += () =>
+                {
+                    EditorUtility.DisplayDialog("快手小游戏插件检查更新", $"当前版本: {currentVersion}, 线上最新版本: {latestVersion}，已是最新版本。", "确定");
+                };
             }
             return false;
         }

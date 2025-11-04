@@ -30,11 +30,13 @@ namespace KSWASM.editor
         private void OnSettingsGUI(SerializedObject serializedObject, SerializedProperty miniGameProperty, bool showBuildPath = false)
         {
             loadData(serializedObject, miniGameProperty);
+            bool drawAnyGUI = false;
             scrollRoot = EditorGUILayout.BeginScrollView(scrollRoot);
 
             foldBaseInfo = EditorGUILayout.Foldout(foldBaseInfo, "快手小游戏配置");
             if (foldBaseInfo)
             {
+                drawAnyGUI = true;
                 EditorGUILayout.BeginVertical("frameBox", GUILayout.ExpandWidth(true));
 
                 var appid = this.getDataInput("appid");
@@ -102,6 +104,7 @@ namespace KSWASM.editor
             foldDebugOptions = EditorGUILayout.Foldout(foldDebugOptions, "调试编译选项");
             if (foldDebugOptions)
             {
+                drawAnyGUI = true;
                 EditorGUILayout.BeginVertical("frameBox", GUILayout.ExpandWidth(true));
 #if TUANJIE_2022_3_OR_NEWER
                 bool UseIL2CPP = PlayerSettings.GetScriptingBackend(BuildTargetGroup.WeixinMiniGame) == ScriptingImplementation.IL2CPP;
@@ -130,6 +133,7 @@ namespace KSWASM.editor
             foldInstantGame = EditorGUILayout.Foldout(foldInstantGame, "Instant Game - AutoStreaming");
             if (foldInstantGame)
             {
+                drawAnyGUI = true;
                 EditorGUILayout.BeginVertical("frameBox", GUILayout.ExpandWidth(true));
                 this.formInput("bundlePathIdentifier", "Bundle Path Identifier");
                 this.formInput("dataFileSubPrefix", "Data File Sub Prefix");
@@ -145,6 +149,11 @@ namespace KSWASM.editor
             }
 #endif
             
+            if (!drawAnyGUI)
+            {
+                GUILayoutUtility.GetRect(1, 1);
+            }
+
             EditorGUILayout.EndScrollView();
 
             saveData(serializedObject, miniGameProperty);
