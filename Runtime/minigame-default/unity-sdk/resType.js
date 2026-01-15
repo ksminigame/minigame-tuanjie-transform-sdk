@@ -123,7 +123,7 @@ export const ResType = {
     SystemInfoHost: {
         appId: 'string',
         env: 'string',
-        gameVersion: 'string',
+        version: 'string',
     },
     SafeArea: {
         bottom: 'number',

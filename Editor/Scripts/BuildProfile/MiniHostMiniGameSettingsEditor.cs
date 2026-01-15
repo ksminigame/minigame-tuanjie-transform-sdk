@@ -114,16 +114,7 @@ namespace KSWASM.editor
                 this.formCheckbox("il2CppOptimizeSize", "Il2Cpp Optimize Size(?)", "对应于Il2CppCodeGeneration选项，勾选时使用OptimizeSize(默认推荐)，生成代码小15%左右，取消勾选则使用OptimizeSpeed。游戏中大量泛型集合的高频访问建议OptimizeSpeed，在使用HybridCLR等第三方组件时只能用OptimizeSpeed。(Dotnet Runtime模式下该选项无效)", !UseIL2CPP);
                 this.formCheckbox("profilingFuncs", "Profiling Funcs");
                 this.formCheckbox("profilingMemory", "Profiling Memory");
-
-                // webgl2.0
-                GUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(string.Empty, GUILayout.Width(10));
-                EditorGUI.BeginDisabledGroup(true); 
-                GUILayout.Label(new GUIContent("WebGL2.0(beta)(?)", "是否启用 WebGL2，目前需要在 Player Settings 的 Graphics APIs 中手动选择 WebGL 2"), GUILayout.Width(140));
-                EditorGUILayout.Toggle(false, GUILayout.Width(20));            
-                EditorGUI.EndDisabledGroup();  
-                GUILayout.EndHorizontal();
-
+                this.formCheckbox("webgl2", "WebGL2.0(beta)(?)", "是否启用 WebGL2");
                 this.formCheckbox("deleteStreamingAssets", "Clear Streaming Assets");
                 this.formCheckbox("showMonitorSuggestModal", "显示优化建议弹窗");
                 EditorGUILayout.EndVertical();

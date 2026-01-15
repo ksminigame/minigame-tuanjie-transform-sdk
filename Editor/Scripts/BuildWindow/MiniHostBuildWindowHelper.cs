@@ -23,18 +23,18 @@ namespace KSWASM.editor
         {
             guiHelper.OnSettingsGUI(showBuildPath);
         }
-        
+
         public static void OnDisable()
         {
             helper.OnDisable();
         }
-        
+
         public static void UpdateWebGL2()
         {
             helper.UpdateWebGL2();
         }
     }
-    
+
     public class SettingsHelper
     {
         private Dictionary<string, string> formInputData = new Dictionary<string, string>();
@@ -201,7 +201,7 @@ namespace KSWASM.editor
                 return this.formInputData[target];
             return "";
         }
-        
+
         internal int getDataPop(string target)
         {
             if (this.formIntPopupData.ContainsKey(target))
@@ -215,15 +215,15 @@ namespace KSWASM.editor
                 return this.formCheckboxData[target];
             return false;
         }
-        
+
         public int getInt(string target)
         {
             string input = getDataInput(target);
-            
+
             if (string.IsNullOrEmpty(input) || !int.TryParse(input, out int value))
             {
                 Debug.LogError($"输入的 {target} 不能为空");
-                return 0; 
+                return 0;
             }
 
             return value;
@@ -334,38 +334,38 @@ namespace KSWASM.editor
                 EditorGUILayout.LabelField(string.Empty);
             GUILayout.EndHorizontal();
         }
-        
+
         public void UpdateWebGL2()
         {
-            // Global PlayerSettings
-            ColorSpace colorSpace = PlayerSettings.colorSpace;
+            // // Global PlayerSettings
+            // ColorSpace colorSpace = PlayerSettings.colorSpace;
 
-            GraphicsDeviceType[] apis = PlayerSettings.GetGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget);
-            bool isAutomatic = PlayerSettings.GetUseDefaultGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget);
+            // GraphicsDeviceType[] apis = PlayerSettings.GetGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget);
+            // bool isAutomatic = PlayerSettings.GetUseDefaultGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget);
 
-            // Dont allow automatic
-            if (isAutomatic && colorSpace == ColorSpace.Linear)
-            {
-                config.CompileOptions.Webgl2 = true;
-                this.setData("webgl2", config.CompileOptions.Webgl2);
-            }
+            // // Dont allow automatic
+            // if (isAutomatic && colorSpace == ColorSpace.Linear)
+            // {
+            //     config.CompileOptions.Webgl2 = true;
+            //     this.setData("webgl2", config.CompileOptions.Webgl2);
+            // }
 
-            if (apis.Length == 1)
-            {
-                bool isWebGL1 = apis.Contains(GraphicsDeviceType.OpenGLES2);
-                if (isWebGL1 && colorSpace == ColorSpace.Linear)
-                {
-                    Debug.LogError("WebGL1 does not support Linear color space. Please switch to Gamma color space.");
-                    return;
-                }
+            // if (apis.Length == 1)
+            // {
+            //     bool isWebGL1 = apis.Contains(GraphicsDeviceType.OpenGLES2);
+            //     if (isWebGL1 && colorSpace == ColorSpace.Linear)
+            //     {
+            //         Debug.LogError("WebGL1 does not support Linear color space. Please switch to Gamma color space.");
+            //         return;
+            //     }
 
-                config.CompileOptions.Webgl2 = !isWebGL1;
-                this.setData("webgl2", config.CompileOptions.Webgl2);
-            }
-            else
-            {
-                Debug.LogError("Please choose between WebGL1 and WebGL2");
-            }
+            //     config.CompileOptions.Webgl2 = !isWebGL1;
+            //     this.setData("webgl2", config.CompileOptions.Webgl2);
+            // }
+            // else
+            // {
+            //     Debug.LogError("Please choose between WebGL1 and WebGL2");
+            // }
         }
 
         public void OnDisable()
@@ -374,7 +374,7 @@ namespace KSWASM.editor
         }
     }
 
-    
+
     public class SettingGuiHelper
     {
         private Vector2 scrollRoot;
@@ -406,7 +406,7 @@ namespace KSWASM.editor
                 EditorGUILayout.LabelField(string.Empty, GUILayout.Width(10));
                 GuiUtil.DrawGameIDField();
                 appid = GUILayout.TextField(appid, GUILayout.MaxWidth(EditorGUIUtility.currentViewWidth - 195));
-                
+
                 settingsHelper.setData("appid", appid);
                 GUILayout.EndHorizontal();
 
@@ -436,7 +436,7 @@ namespace KSWASM.editor
                     settingsHelper.setData("dst", dst);
                     GUILayout.EndHorizontal();
                 }
-                
+
                 GUILayout.BeginHorizontal();
                 string targetBg = "bgImageSrc";
                 EditorGUILayout.LabelField(string.Empty, GUILayout.Width(10));
@@ -462,7 +462,7 @@ namespace KSWASM.editor
                 settingsHelper.formInput("preloadFiles", "预下载Bundle列表(?)", "使用;间隔，支持模糊匹配");
                 EditorGUILayout.EndVertical();
             }
-            
+
             foldDebugOptions = EditorGUILayout.Foldout(foldDebugOptions, "调试编译选项");
             if (foldDebugOptions)
             {
@@ -478,13 +478,13 @@ namespace KSWASM.editor
                 settingsHelper.formCheckbox("il2CppOptimizeSize", "Il2Cpp Optimize Size(?)", "对应于Il2CppCodeGeneration选项，勾选时使用OptimizeSize(默认推荐)，生成代码小15%左右，取消勾选则使用OptimizeSpeed。游戏中大量泛型集合的高频访问建议OptimizeSpeed，在使用HybridCLR等第三方组件时只能用OptimizeSpeed。(Dotnet Runtime模式下该选项无效)", !UseIL2CPP);
                 settingsHelper.formCheckbox("profilingFuncs", "Profiling Funcs");
                 settingsHelper.formCheckbox("profilingMemory", "Profiling Memory");
-                GuiUtil.DrawWebGl2();
+                settingsHelper.formCheckbox("webgl2", "WebGL2.0(beta)(?)", "是否启用 WebGL2");
                 settingsHelper.formCheckbox("deleteStreamingAssets", "Clear Streaming Assets");
                 settingsHelper.formCheckbox("cleanBuild", "Clean WebGL Build");
                 settingsHelper.formCheckbox("showMonitorSuggestModal", "显示优化建议弹窗");
                 EditorGUILayout.EndVertical();
             }
-            
+
 #if UNITY_INSTANTGAME
             foldInstantGame = EditorGUILayout.Foldout(foldInstantGame, "Instant Game - AutoStreaming");
             if (foldInstantGame)
@@ -503,9 +503,9 @@ namespace KSWASM.editor
                 EditorGUILayout.EndVertical();
             }
 #endif
-            
+
             EditorGUILayout.EndScrollView();
-            
+
             settingsHelper.saveData();
         }
     }
@@ -522,14 +522,14 @@ namespace KSWASM.editor
                 Application.OpenURL(m_AppIdDocLink);
             }
         }
-        
+
         public static void DrawWebGl2()
         {
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(string.Empty, GUILayout.Width(10));
             EditorGUI.BeginDisabledGroup(true); 
             GUILayout.Label(new GUIContent("WebGL2.0(beta)(?)", "是否启用 WebGL2，目前需要在 Player Settings 的 Graphics APIs 中手动选择 WebGL 2"), GUILayout.Width(140));
-            EditorGUILayout.Toggle(false, GUILayout.Width(20));            
+            EditorGUILayout.Toggle(false, GUILayout.Width(20));
             EditorGUI.EndDisabledGroup();  
             GUILayout.EndHorizontal();
         }
