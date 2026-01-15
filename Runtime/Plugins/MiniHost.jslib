@@ -870,13 +870,8 @@ KS_GetLaunchOptionsSync:function(
     stringToUTF8(res, buffer, bufferSize);
     return buffer;
 },
-KS_GetMenuButtonBoundingClientRect:function(
-){
-    var res = window.KSWASMSDK.KS_GetMenuButtonBoundingClientRect();
-    var bufferSize = lengthBytesUTF8(res || '') + 1;
-    var buffer = _malloc(bufferSize);
-    stringToUTF8(res, buffer, bufferSize);
-    return buffer;
+KS_GetMenuButtonLayout: function(callbackId){
+    window.GameGlobal.KSWASMSDK.KS_GetMenuButtonLayout(_KSPointer_stringify_adaptor(callbackId));
 },
 KS_GetStorageInfoSync:function(
 ){

@@ -4322,11 +4322,27 @@ export default {
         formatResponse('LaunchOptionsGame', res);
         return JSON.stringify(res);
     },
-    KS_GetMenuButtonBoundingClientRect() {
-        console.log("KS_GetMenuButtonBoundingClientRect is not supported");
-        // const res = ks.getMenuButtonBoundingClientRect();
-        // formatResponse('ClientRect', res);
-        // return JSON.stringify(res);
+    KS_GetMenuButtonLayout(callbackId) {
+        ks.getMenuButtonLayout({
+            success(res) {
+                formatResponse('GetMenuButtonLayoutCallbackResult', res);
+                moduleHelper.send('GetMenuButtonLayoutCallback', JSON.stringify({
+                    callbackId, type: 'success', res: JSON.stringify(res),
+                }));
+            },
+            fail(res) {
+                formatResponse('KSGeneralCallbackResult', res);
+                moduleHelper.send('KSGeneralCallbackResult', JSON.stringify({
+                    callbackId, type: 'fail', res: JSON.stringify(res),
+                }));
+            },
+            complete(res) {
+                formatResponse('GeneralCallbackResult', res);
+                moduleHelper.send('GeneralCallbackResult', JSON.stringify({
+                    callbackId, type: 'complete', res: JSON.stringify(res),
+                }));
+            },
+        });
     },
     KS_GetStorageInfoSync() {
         const res = ks.getStorageInfoSync();
