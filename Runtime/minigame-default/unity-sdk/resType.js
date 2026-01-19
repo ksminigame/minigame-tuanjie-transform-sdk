@@ -635,6 +635,7 @@ export const ResType = {
         country: "string",
         language: "string",
         province: "string",
+        adult: "string",
     },
     OpenUrlCallbackResult: {
         code: 'number',

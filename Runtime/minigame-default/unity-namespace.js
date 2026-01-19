@@ -37,11 +37,11 @@ const unityNamespace = {
     ttlAssetBundle: 5,
     // 是否显示性能面板
     enableProfileStats: $ENABLE_PROFILE_STATS,
-    // 是否预载微信系统字体
+    // 是否预载快手系统字体
     preloadKSFont: $PRELOAD_KSFONT,
     // iOS高性能模式定期GC间隔
     iOSAutoGCInterval: $IOS_AUTO_GC_INTERVAL,
-    // 是否使用微信压缩纹理
+    // 是否使用快手压缩纹理
     usedTextureCompression: GameGlobal.USED_TEXTURE_COMPRESSION,
     // 是否使用autostreaming
     usedAutoStreaming: $USED_AUTO_STREAMING,
