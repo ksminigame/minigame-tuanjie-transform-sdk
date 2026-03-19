@@ -98,6 +98,16 @@ namespace KSWASM.editor
 #else
             KSExtEnvDef.SETDEF("WEIXINMINIGAME", false);
 #endif
+#if MINIGAME_SUBPLATFORM_KUAISHOU
+            KSExtEnvDef.SETDEF("MINIGAME_SUBPLATFORM_KUAISHOU", true);
+#else
+            KSExtEnvDef.SETDEF("MINIGAME_SUBPLATFORM_KUAISHOU", false);
+#endif
+#if UNITY_MINIGAME
+            KSExtEnvDef.SETDEF("UNITY_MINIGAME", true);
+#else
+            KSExtEnvDef.SETDEF("UNITY_MINIGAME", false);
+#endif
 #if TUANJIE_2022_3_OR_NEWER
             KSExtEnvDef.SETDEF("TUANJIE_2022_3_OR_NEWER", true);
 #else
