@@ -370,3 +370,23 @@ export function stringifyRes(obj) {
     }
     return JSON.stringify(obj);
 }
+export function compareVersion(version1, version2) {
+    if (typeof version1 === "undefined" || typeof version2 === "undefined") {
+      return -1;
+    }
+    if (!version1 || !version2) {
+      return -1;
+    }
+    var version1Partments = version1.split(".");
+    var version2Partments = version2.split(".");
+    for (var i = 0; i < version1Partments.length; ++i) {
+      var num1 = parseInt(version1Partments[i]);
+      var num2 = parseInt(version2Partments[i]);
+      if (num1 > num2) {
+        return 1;
+      } else if (num1 < num2) {
+        return -1;
+      }
+    }
+    return 0;
+  }

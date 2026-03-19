@@ -1,6 +1,6 @@
 
 import moduleHelper from './module-helper';
-import { uid, formatResponse, formatJsonStr, onEventCallback, offEventCallback, getListObject, stringifyRes } from './utils';
+import { uid, formatResponse, formatJsonStr, onEventCallback, offEventCallback, getListObject, stringifyRes, compareVersion } from './utils';
 let OnAccelerometerChangeList;
 let OnAudioInterruptionBeginList;
 let OnAudioInterruptionEndList;
@@ -3405,7 +3405,7 @@ export default {
         ks.setStorageSync(key, formatJsonStr(data));
     },
     KS_GetStorageSync(key) {
-      return ks.getStorageSync(key);
+        return ks.getStorageSync(key);
     },
     KS_TriggerGC() {
         console.log("KS_TriggerGC is not supported");
@@ -4473,6 +4473,10 @@ export default {
     },
     KS_CreateVideoDecoder() {
         console.log("KS_CreateVideoDecoder is not supported");
+        // if (compareVersion(ks.getSystemInfoSync().version, "") < 0) {
+        //     console.log("KS_CreateVideoDecoder is not supported in this version");
+        //     return;
+        // }
         // const obj = ks.createVideoDecoder();
         // const key = uid();
         // VideoDecoderList[key] = obj;
@@ -4864,7 +4868,7 @@ export default {
             },
         });
     },
-    KS_IsLaunchFromShortcut(){
+    KS_IsLaunchFromShortcut() {
         const res = ks.isLaunchFromShortcut();
         return res;
     },

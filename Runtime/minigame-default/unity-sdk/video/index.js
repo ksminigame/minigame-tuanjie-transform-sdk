@@ -103,10 +103,7 @@ function _JS_Video_Create(url) {
             if (isDebug) {
                 console.warn('ksVideoDecoder ended:', res);
             }
-            if (videoInstance.loop) {
-                videoInstance.seek(0);
-            }
-            else {
+            if (!videoInstance.loop) {
                 videoInstance.ended = true;
                 videoInstance.onended?.();
             }
@@ -120,6 +117,7 @@ function _JS_Video_Create(url) {
         });
         videoInstance.play = () => videoDecoder.start({
             source,
+            loop:videoInstance.loop
         });
         videoInstance.pause = () => {
             videoDecoder.stop();

@@ -10,8 +10,8 @@ namespace KSWASM.editor
         static void ShowWindow()
         {
             var win = GetWindow(typeof(MiniHostBuildWindow), false, "构建快手小游戏");
-            win.minSize = new Vector2(750, 400);
-            win.position = new Rect(100, 100, 750, 400);
+            win.minSize = new Vector2(350, 400);
+            win.position = new Rect(100, 100, 600, 700);
             win.Show();
         }
 
