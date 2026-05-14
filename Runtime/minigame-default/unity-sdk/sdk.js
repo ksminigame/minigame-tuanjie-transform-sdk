@@ -31,6 +31,7 @@ let OnNetworkStatusChangeList;
 let OnNetworkWeakChangeList;
 let OnScreenRecordingStateChangedList;
 let OnShowList;
+let OnFeedStatusChangeList;
 let OnUnhandledRejectionList;
 let OnUserCaptureScreenList;
 let OnVoIPChatInterruptedList;
@@ -3982,6 +3983,23 @@ export default {
     KS_OffShow() {
         (OnShowList || []).forEach((v) => {
             ks.offShow(v);
+        });
+    },
+    KS_OnFeedStatusChange() {
+        if (!OnFeedStatusChangeList) {
+            OnFeedStatusChangeList = [];
+        }
+        const callback = (res) => {
+            formatResponse('OnFeedStatusChangeListenerResult', res);
+            const resStr = stringifyRes(res);
+            moduleHelper.send('_OnFeedStatusChangeCallback', resStr);
+        };
+        OnFeedStatusChangeList.push(callback);
+        ks.onFeedStatusChange(callback);
+    },
+    KS_OffFeedStatusChange() {
+        (OnFeedStatusChangeList || []).forEach((v) => {
+            ks.offFeedStatusChange(v);
         });
     },
     KS_OnUnhandledRejection() {
