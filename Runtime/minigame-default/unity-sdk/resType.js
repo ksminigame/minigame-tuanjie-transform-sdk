@@ -800,6 +800,9 @@ export const ResType = {
         query: 'object',
         from: 'string',
     },
+    OnFeedStatusChangeListenerResult: {
+        type: 'string',
+    },
     ResultReferrerInfo: {
         appId: 'string',
         extraData: 'object',

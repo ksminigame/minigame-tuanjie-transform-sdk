@@ -673,6 +673,12 @@ KS_OnShow:function() {
 KS_OffShow:function() {
     window.KSWASMSDK.KS_OffShow();
 },
+KS_OnFeedStatusChange:function() {
+    window.KSWASMSDK.KS_OnFeedStatusChange();
+},
+KS_OffFeedStatusChange:function() {
+    window.KSWASMSDK.KS_OffFeedStatusChange();
+},
 KS_OnUnhandledRejection:function() {
     window.KSWASMSDK.KS_OnUnhandledRejection();
 },

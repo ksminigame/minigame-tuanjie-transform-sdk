@@ -16,7 +16,7 @@ function jsAudioCreateUncompressedSoundClip(buffer, error, length) {
         },
         getLength() {
             if (!this.buffer) {
-                
+
                 return 0;
             }
             const sampleRateRatio = 44100 / this.buffer.sampleRate;
@@ -80,7 +80,7 @@ function jsAudioCreateCompressedSoundClip(audioData, ptr, length) {
         getLength() {
             return this.length || 0;
         },
-        
+
         getData(ptr, length) {
             console.warn('getData() is not supported for compressed sound.');
             return 0;
@@ -148,7 +148,7 @@ function jsAudioCreateUncompressedSoundClipFromPCM(channels, length, sampleRate,
     return jsAudioCreateUncompressedSoundClip(null, false, length);
 }
 export class AudioChannelInstance {
-    threeD = false; 
+    threeD = false;
     source;
     gain;
     callback = 0;
@@ -156,8 +156,8 @@ export class AudioChannelInstance {
     loop = false;
     loopStart = 0;
     loopEnd = 0;
-    deleyTime = 0; 
-    deleyOffset = 0; 
+    deleyTime = 0;
+    deleyOffset = 0;
     constructor(callback, userData) {
         if (WEBAudio.audioContext) {
             // this.gain = WEBAudio.audioContext.createGain();
@@ -211,7 +211,7 @@ export class AudioChannelInstance {
                     this.source.isPlaying = true;
                     if (!this.source.loop && this.source.mediaElement) {
                         const { duration } = this.source.mediaElement;
-                        
+
                         if (duration > 0) {
                             if (this.source.stopTicker) {
                                 clearTimeout(this.source.stopTicker);
@@ -237,6 +237,13 @@ export class AudioChannelInstance {
                 }
             });
             this.source.mediaElement.onStop(() => {
+                if (this.suppressCallback) {
+                    if (typeof this.source !== 'undefined') {
+                        this.source._reset();
+                        this.disconnectSource();
+                    }
+                    return;
+                }
                 if (typeof this.source !== 'undefined') {
                     if (this.source.playAfterStop) {
                         this.source._reset();
@@ -253,6 +260,9 @@ export class AudioChannelInstance {
                 }
             });
             this.source.mediaElement.onEnded(() => {
+                if (this.suppressCallback) {
+                    return;
+                }
                 if (typeof this.source !== 'undefined') {
                     this.source._reset();
                     this.disconnectSource();
@@ -263,11 +273,11 @@ export class AudioChannelInstance {
             });
             this.source.mediaElement.onError((e) => {
                 const { errMsg } = e;
-                
+
                 if (errMsg && errMsg.indexOf('play audio fail') < 0) {
                     return;
                 }
-                
+
                 if (typeof this.source !== 'undefined' && this.source.mediaElement) {
                     this.source._reset();
                     this.source.mediaElement.stop();
@@ -275,8 +285,8 @@ export class AudioChannelInstance {
             });
             const fn = () => {
                 if (typeof this.source !== 'undefined' && this.source.mediaElement) {
-                    
-                    
+
+
                     const { duration } = this.source.mediaElement;
                     setTimeout(() => {
                         if (soundClip && this.source && this.source.mediaElement) {
@@ -456,13 +466,13 @@ export class AudioChannelInstance {
         if (WEBAudio.isMute) {
             volume = 0;
         }
-        
+
         if (isDefault && volume == 1) {
             return;
         }
         if (this.source) {
             if (this.source.buffer && this.gain) {
-                
+
                 this.gain.gain.value = volume;
             }
             else if (this.source.mediaElement) {
@@ -477,23 +487,23 @@ export class AudioChannelInstance {
         if (this.source && !this.source.isPausedMockNode) {
             if (!this.source.url) {
                 if (typeof url !== 'undefined') {
-                    
+
                     this.stop(0);
                 }
                 else {
-                    
+
                 }
             }
             else if (typeof url === 'undefined') {
                 if (typeof this.source !== 'undefined') {
-                    
+
                     this.source._reset();
                 }
                 this.disconnectSource();
             }
             else {
-                
-                
+
+
                 this.source._reset();
                 this.disconnectSource();
             }
@@ -527,11 +537,11 @@ export class AudioChannelInstance {
                 }
                 this.source.needCanPlay = true;
                 if (this.source.fixPlayTicker) {
-                    
+
                     clearTimeout(this.source.fixPlayTicker);
                     delete this.source.fixPlayTicker;
                 }
-                
+
                 this.source.fixPlayTicker = setTimeout(() => {
                     if (this.source && this.source.mediaElement && this.source.needCanPlay && !this.source.isPlaying) {
                         this.source.mediaElement.play();
@@ -546,7 +556,7 @@ export class AudioChannelInstance {
                             this.source.playAfterStop = true;
                         }
                         else if (!this.source.isPlaying) {
-                            
+
                             if (isAndroid) {
                                 innerFixPlay();
                             }
@@ -561,11 +571,11 @@ export class AudioChannelInstance {
                             this.source.needCanPlay = false;
                             this.source.readyToPlay = true;
                             if (typeof this.source.mediaElement !== 'undefined') {
-                                
-                                
+
+
                                 const { duration } = this.source.mediaElement;
-                                
-                                
+
+
                                 this.source.canPlayFnList.forEach((fn) => {
                                     this.source?.mediaElement?.offCanplay(fn);
                                 });
@@ -576,7 +586,7 @@ export class AudioChannelInstance {
                                 this.source.playAfterStop = true;
                             }
                             else if (!this.source.isPlaying) {
-                                
+
                                 if (isAndroid) {
                                     innerFixPlay();
                                 }
@@ -594,7 +604,7 @@ export class AudioChannelInstance {
                     }
                 }
             };
-            
+
             const _reset = () => {
                 if (!this.source) {
                     return;
@@ -609,7 +619,7 @@ export class AudioChannelInstance {
                     this.source.stopTicker = undefined;
                 }
             };
-            
+
             const _pauseMediaElement = () => {
                 if (typeof this.source === 'undefined') {
                     return;
@@ -621,7 +631,7 @@ export class AudioChannelInstance {
                     this.source.mediaElement.pause();
                 }
             };
-            
+
             const _startPlayback = (offset) => {
                 if (typeof this.source === 'undefined' || !this.source.mediaElement) {
                     return;
@@ -710,22 +720,22 @@ export class AudioChannelInstance {
                 start,
                 stop,
             };
-            
-            
+
+
             const { buffered, referrerPolicy, volume } = getAudio;
             const { source } = this;
             Object.defineProperty(this.source, 'loopStart', {
                 get() {
                     return 0;
                 },
-                
+
                 set(v) { },
             });
             Object.defineProperty(source, 'loopEnd', {
                 get() {
                     return 0;
                 },
-                
+
                 set(v) { },
             });
             Object.defineProperty(source, 'loop', {
@@ -741,14 +751,14 @@ export class AudioChannelInstance {
             });
             Object.defineProperty(source, 'playbackRateValue', {
                 get() {
-                    
+
                     return source?.playbackRate ?? 1;
                 },
                 set(v) {
                     if (!source || !source.mediaElement) {
                         return;
                     }
-                    
+
                     if (!isSupportPlayBackRate) {
                         source.mediaElement.playbackRate = 1;
                     }
@@ -882,7 +892,7 @@ export default {
                     clearTimeout(webAutoResumeTicker);
                     webAutoResumeTicker = null;
                 }
-                
+
                 if (!GameGlobal.isIOSHighPerformanceMode) {
                     WEBAudio.audioContext?.suspend?.();
                 }
@@ -891,7 +901,7 @@ export default {
                 WEBAudio.audioContext?.resume?.();
             });
             if (webAudioNeedResume) {
-                
+
                 webAutoResumeTicker = setTimeout(() => {
                     resumeWebAudio();
                 }, 2000);
@@ -915,25 +925,25 @@ export default {
         if (!WEBAudio.audioContext || WEBAudio.audioWebEnabled === 0) {
             return 0;
         }
-        
+
         let audioData = GameGlobal.unityNamespace.Module.HEAPU8.buffer.slice(ptr, ptr + length);
         if (audioData && typeof SharedArrayBuffer !== 'undefined' && audioData instanceof SharedArrayBuffer) {
             const audioDataArrayBuffer = new ArrayBuffer(audioData.byteLength);
             new Uint8Array(audioDataArrayBuffer).set(new Uint8Array(audioData));
             audioData = audioDataArrayBuffer;
         }
-        
+
         if (length > 131072) {
             decompress = 0;
         }
         else {
             decompress = 1;
         }
-        
+
         if (isPc) {
             decompress = 1;
         }
-        
+
         if (isAndroid && !isSupportInnerAudio) {
             decompress = 1;
         }
@@ -960,9 +970,11 @@ export default {
         if (!WEBAudio.audioContext || WEBAudio.audioWebEnabled === 0) {
             return;
         }
-        KSWASMSDK._JS_Sound_Stop(channelInstance, 0);
         const soundClip = WEBAudio.audioInstances[bufferInstance];
         const channel = WEBAudio.audioInstances[channelInstance];
+        if (channel) { channel.suppressCallback = true; }
+        KSWASMSDK._JS_Sound_Stop(channelInstance, 0);
+        if (channel) { channel.suppressCallback = false; }
         if (soundClip && soundClip.url) {
             try {
                 channel.playUrl(delay, soundClip.url, offset, unityAudioVolume.get(channel), soundClip);
@@ -1127,7 +1139,7 @@ export default {
             printErrMsg(`Invalid audio pitch ${v} specified to WebAudio backend!`);
         }
     },
-    
+
     _JS_Sound_SetPosition(channelInstance, x, y, z) {
         if (WEBAudio.audio3DSupport === 0 || WEBAudio.audioWebSupport === 0 || WEBAudio.audioWebEnabled === 0) {
             return;
@@ -1193,7 +1205,7 @@ export default {
         if (!audioInstance) {
             return WEBAudio.FAKEMOD_SAMPLERATE;
         }
-        
+
         const buffer = audioInstance.buffer
             ? audioInstance.buffer
             : audioInstance.source

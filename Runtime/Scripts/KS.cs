@@ -1871,6 +1871,21 @@ namespace KSWASM
         }
 
         /// <summary>
+        /// 监听 Feed 流进入/退出小游戏事件
+        /// </summary>
+        public static void OnFeedStatusChange(Action<OnFeedStatusChangeListenerResult> result)
+        {
+            KSSDKManagerHandler.Instance.OnFeedStatusChange(result);
+        }
+        /// <summary>
+        /// 取消监听 Feed 流进入/退出小游戏事件
+        /// </summary>
+        public static void OffFeedStatusChange(Action<OnFeedStatusChangeListenerResult> result = null)
+        {
+            KSSDKManagerHandler.Instance.OffFeedStatusChange(result);
+        }
+
+        /// <summary>
         /// 监听未处理的 Promise 拒绝事件
         /// **注意**
         /// 安卓平台暂时不会派发该事件
