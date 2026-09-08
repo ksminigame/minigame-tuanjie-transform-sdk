@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -117,6 +117,11 @@ namespace KSWASM.editor
             KSExtEnvDef.SETDEF("PLATFORM_WEIXINMINIGAME", true);
 #else
             KSExtEnvDef.SETDEF("PLATFORM_WEIXINMINIGAME", false);
+#endif
+#if TUANJIE_EMSCRIPTEN_3_1_39
+            KSExtEnvDef.SETDEF("TUANJIE_EMSCRIPTEN_3_1_39", true);
+#else
+            KSExtEnvDef.SETDEF("TUANJIE_EMSCRIPTEN_3_1_39", false);
 #endif
             RegisterController();
         }
