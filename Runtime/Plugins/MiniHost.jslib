@@ -679,6 +679,12 @@ KS_OnFeedStatusChange:function() {
 KS_OffFeedStatusChange:function() {
     window.KSWASMSDK.KS_OffFeedStatusChange();
 },
+KS_StoreFeedData:function(conf, callbackId) {
+    window.KSWASMSDK.KS_StoreFeedData(_KSPointer_stringify_adaptor(conf), _KSPointer_stringify_adaptor(callbackId));
+},
+KS_GetFeedData:function(conf, callbackId) {
+    window.KSWASMSDK.KS_GetFeedData(_KSPointer_stringify_adaptor(conf), _KSPointer_stringify_adaptor(callbackId));
+},
 KS_OnUnhandledRejection:function() {
     window.KSWASMSDK.KS_OnUnhandledRejection();
 },

@@ -675,7 +675,7 @@ export const ResType = {
     },
     RequestFailCallbackErr: {
         errMsg: 'string',
-        errno: 'number',
+        errNo: 'number',
     },
     LoginSuccessCallbackResult: {
         code: 'string',
@@ -802,6 +802,11 @@ export const ResType = {
     },
     OnFeedStatusChangeListenerResult: {
         type: 'string',
+    },
+    GetFeedDataSuccessCallbackResult: {
+        errMsg: 'string',
+        extra: 'string',
+        status: 'number',
     },
     ResultReferrerInfo: {
         appId: 'string',
