@@ -1886,6 +1886,22 @@ namespace KSWASM
         }
 
         /// <summary>
+        /// 存储推荐流直出（直玩）场景状态数据
+        /// </summary>
+        public static void StoreFeedData(StoreFeedDataOption option)
+        {
+            KSSDKManagerHandler.Instance.StoreFeedData(option);
+        }
+
+        /// <summary>
+        /// 获取推荐流直出（直玩）场景状态数据
+        /// </summary>
+        public static void GetFeedData(GetFeedDataOption option)
+        {
+            KSSDKManagerHandler.Instance.GetFeedData(option);
+        }
+
+        /// <summary>
         /// 监听未处理的 Promise 拒绝事件
         /// **注意**
         /// 安卓平台暂时不会派发该事件
